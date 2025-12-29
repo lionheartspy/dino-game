@@ -2618,8 +2618,21 @@ html[subframe] body {
   </script>
 	  
 
+<script>
+(function forceStart() {
+  function start() {
+    if (window.Runner && Runner.instance_) {
+      Runner.instance_.startGame();
+    } else {
+      setTimeout(start, 100);
+    }
+  }
+  start();
+})();
+</script>
 
 
 </body>
+
 
 </html>
