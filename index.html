@@ -2682,11 +2682,55 @@ html[subframe] body {
   document.addEventListener("keydown", unlockAudio);
   document.addEventListener("touchstart", unlockAudio);
 </script>
+<script>
+(function () {
+  const jump = new Audio("sounds/jump.mp3");
+  const hit = new Audio("sounds/gameover.mp3");
+
+  let unlocked = false;
+
+  function unlock() {
+    if (unlocked) return;
+    unlocked = true;
+    jump.play().then(() => jump.pause()).catch(()=>{});
+    hit.play().then(() => hit.pause()).catch(()=>{});
+  }
+
+  document.addEventListener("click", unlock, { once: true });
+  document.addEventListener("keydown", unlock, { once: true });
+
+  // Hook into existing game functions
+  const check = setInterval(() => {
+    if (!window.Runner || !Runner.instance_) return;
+
+    const r = Runner.instance_;
+
+    // Jump sound
+    const oldStartJump = r.tRex.startJump.bind(r.tRex);
+    r.tRex.startJump = function () {
+      jump.currentTime = 0;
+      jump.play().catch(()=>{});
+      return oldStartJump();
+    };
+
+    // Crash sound
+    const oldGameOver = r.gameOver.bind(r);
+    r.gameOver = function () {
+      hit.currentTime = 0;
+      hit.play().catch(()=>{});
+      return oldGameOver();
+    };
+
+    clearInterval(check);
+  }, 200);
+})();
+</script>
 
 
 </body>
 
 
 </html>
+
 
 
