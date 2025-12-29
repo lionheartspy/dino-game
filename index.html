@@ -2657,10 +2657,36 @@ html[subframe] body {
     tryStart();
   });
 </script>
+<script>
+  // UNLOCK AUDIO AFTER USER INTERACTION
+  function unlockAudio() {
+    if (window.Runner && Runner.instance_ && Runner.instance_.audioContext) {
+      const ctx = Runner.instance_.audioContext;
+      if (ctx.state === "suspended") {
+        ctx.resume();
+      }
+    }
+
+    // Play & pause all sounds once to unlock
+    document.querySelectorAll("audio").forEach(a => {
+      a.play().then(() => a.pause()).catch(() => {});
+    });
+
+    // Remove listeners after unlock
+    document.removeEventListener("click", unlockAudio);
+    document.removeEventListener("keydown", unlockAudio);
+    document.removeEventListener("touchstart", unlockAudio);
+  }
+
+  document.addEventListener("click", unlockAudio);
+  document.addEventListener("keydown", unlockAudio);
+  document.addEventListener("touchstart", unlockAudio);
+</script>
 
 
 </body>
 
 
 </html>
+
 
