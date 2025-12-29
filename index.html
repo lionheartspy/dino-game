@@ -2630,9 +2630,37 @@ html[subframe] body {
   start();
 })();
 </script>
+<script>
+  // HARD FORCE START FOR HOSTED PAGES
+  window.addEventListener("load", () => {
+    const tryStart = () => {
+      if (window.Runner && Runner.instance_) {
+        const r = Runner.instance_;
+
+        // Reset all locks
+        r.crashed = false;
+        r.paused = false;
+        r.playing = true;
+
+        // Start intro + game loop
+        if (r.playIntro) r.playIntro();
+        if (r.startGame) r.startGame();
+
+        // Simulate first jump unlock
+        document.dispatchEvent(
+          new KeyboardEvent("keydown", { keyCode: 32 })
+        );
+      } else {
+        setTimeout(tryStart, 100);
+      }
+    };
+    tryStart();
+  });
+</script>
 
 
 </body>
 
 
 </html>
+
